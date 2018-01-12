@@ -7,7 +7,7 @@ APP_DIR = 'app'
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '*t5kr@+46)#$*&aw4ms6(kub3vr8+9ap219!-^8+7$vign0uj!'
+SECRET_KEY = '*)#+7$vign0uj!$*&aw4mst5kr@+466(kub3vr8+9ap219!-^8'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -69,8 +69,11 @@ WSGI_APPLICATION = 'app.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'webvita',
+        'USER': 'webvita',
+        'HOST': 'database',
+        'PORT': '5432',
     }
 }
 

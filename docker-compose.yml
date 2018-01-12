@@ -7,13 +7,14 @@ services:
       - .:/app
     depends_on:
       - broker
+      - database
 
 
   proxy:
     build: docker/nginx/.
     volumes:
       - './docker/nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf'
-      - './docker/static:/static'
+      - './static:/static'
     ports:
       - '80:80'
     depends_on:
@@ -21,3 +22,9 @@ services:
 
   broker:
     image: 'redis:alpine'
+
+  database:
+    image: 'postgres'
+    environment:
+      - POSTGRES_USER=webvita
+      - POSTGRES_DB=webvita

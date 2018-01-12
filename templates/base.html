@@ -5,15 +5,26 @@
     <title>{{ title }}</title>
     <link rel="stylesheet" href="/static/css/custom.css">
     <link rel="shortcut icon" href="/static/img/favicon.png?v=1"/>
+    <link rel="stylesheet" href="/static/css/semantic.min.css">
 </head>
 <body>
-{# Navbar might go here #}
+{% include 'components/navbar.html' %}
 
 {% block content %}
 {% endblock %}
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="/static/js/semantic.min.js"></script>
 <script src="/static/js/common.js"></script>
+<script>
+    window.addEventListener('load', function () {
+        $.ajaxSetup({
+            beforeSend:function (xhr, settings) {
+                xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}')
+            }
+        });
+    })
+</script>
 {% block scripts %}
 {% endblock %}
 </body>

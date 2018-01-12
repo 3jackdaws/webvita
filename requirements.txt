@@ -4,3 +4,4 @@ djangorestframework
 PyYaml
 channels
 asgi_redis
+psycopg2

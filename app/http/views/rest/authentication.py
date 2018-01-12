@@ -12,8 +12,8 @@ class UserSerializer(ModelSerializer):
         fields = ('id', 'first_name', 'last_name', 'groups')
 
 
-# /api/auth-sessions
-class AuthenticationView(APIView):
+# /api/sessions
+class SessionView(APIView):
 
     def get(self, request: Request):
         user = request.user  # type: User
@@ -27,9 +27,13 @@ class AuthenticationView(APIView):
         password = request.POST.get('password')
         context = {}
         if username and password:
-            user = authenticate(request, username=username, password=password)
+            user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
                 return Response(UserSerializer(instance=user).data)
             else:
                 return Response(status=401)
+
+    def delete(self, request):
+        logout(request)
+        return Response(status=200)

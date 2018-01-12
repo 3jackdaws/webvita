@@ -21,6 +21,7 @@ from django.views.static import serve
 from rest_framework.authtoken.views import obtain_auth_token
 
 from app.http.views import common
+from app.http.views.rest.authentication import SessionView
 
 
 
@@ -28,12 +29,14 @@ urlpatterns = [
     # USER PAGE URLS
 
     url(r'^$', common.index),
-    url(r'^static/(.*)', common.static),
+
+    url(r'^login/$', common.render_user_login),
 
 
 
     # USER LOGIN/LOGOUT
-    url(r'^api/auth/token', obtain_auth_token),
+    url(r'^api/sessions', SessionView.as_view()),
+
 
 
 
