@@ -71,3 +71,18 @@ function LogoutUser(){
         }
     })
 }
+
+
+var Resume = {
+    resumeEndpoint:'/api/resumes/',
+    createNewResume:function (name, callback) {
+        $.post({
+            url:Resume.resumeEndpoint,
+            data:{
+                name:name
+            },
+            method:'POST',
+            success:callback
+        })
+    }  
+};

@@ -1,5 +1,54 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container text">
-    {% include 'forms/registration.html' %}
-</div>
+    <div class="ui container text" style="max-width: 300px !important;">
+        <h1 style="text-align: center">Create an Account</h1>
+        <div id="register-messages"></div>
+        <div class="ui segment">
+            <form method="POST" action="/api/accounts" class="ui form" onsubmit="ValidateRegisterForm(event)">
+                {% include 'forms/accounts/registration.html'%}
+                <div class="field">
+                    <button class="ui fluid green button">Register</button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+{% endblock %}
+{% block scripts %}
+<script>
+    window.addEventListener('load', function () {
+        $registerMessages = $('#register-messages');
+    });
+
+    function ValidateRegisterForm(event){
+        event.preventDefault();
+        var form = event.target;
+        var data = Form2Object(form);
+        console.log(data);
+        if(!data['email']){
+            $registerMessages.html(Message.getHTML('Error', 'Must provide an email.', 'negative'));
+        }else if(!data['password']){
+            $registerMessages.html(Message.getHTML('Error', 'Must provide a password.', 'negative'));
+        }else if(data['password'] !== data['confirm_password']){
+            $registerMessages.html(Message.getHTML('Error', 'Passwords do not match.', 'negative'));
+        }else{
+            delete data['confirm_password'];
+            $.ajax({
+                url:'/api/account/',
+                method:'post',
+                data:data,
+                complete:function(xhr){HandleRegisterAttempt(JSON.parse(xhr.responseText), xhr.status)}
+            });
+        }
+    }
+
+    function HandleRegisterAttempt(response, status){
+        if(status === 200){
+            window.location = '/';
+        }else if(status === 400){  //login failed
+            console.log(response);
+            $registerMessages.html(Message.getHTML('Error', response.message, 'negative'));
+        }
+    }
+</script>
+{% endblock %}

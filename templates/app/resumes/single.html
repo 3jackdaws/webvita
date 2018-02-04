@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div class="ui container">
+
+        <iframe id="resume-frame" src="/render-resume/{{ resume.id }}/" >
+
+        </iframe>
+    </div>
+
+    <div id="resume-edit-panel">
+        <div class="editor-top-bar">
+            <div class="editor-title"></div>
+            <div class="editor-bar-right">
+                <div class="button" onclick="Editor.toggleVisibility()">Toggle Visibility</div>
+            </div>
+        </div>
+        <div class="tab-area">
+            <div class="ui top attached tabular editor menu" style="border-bottom: 1px solid #333;">
+                <div class="item active" data-tab="layout">Layout</div>
+                <div class="item" data-tab="theme">Theme</div>
+                <div class="item" data-tab="scripts">Scripts</div>
+                <button id="editor-save-button" onclick="Editor.saveChanges()">SAVE CHANGES</button>
+            </div>
+            <textarea class="ui tab edit-textbox active" data-tab="layout"></textarea>
+            <textarea class="ui tab edit-textbox" data-tab="theme"></textarea>
+            <textarea class="ui tab edit-textbox" data-tab="scripts"></textarea>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+    <script>
+
+        window.addEventListener('load', function () {
+            $('.tabular.menu .item').tab();
+        });
+
+        var Editor = {
+            panel:$('#resume-edit-panel'),
+            saveButton:$('#editor-save-button'),
+            isVisible:function () {
+                return Editor.panel.hasClass('visible');
+            },
+            setTitleBar:function(text){
+                Editor.panel.find('.editor-title').html(text);
+            },
+            show:function () {
+                Editor.panel.addClass('visible');
+            },
+            hide:function () {
+                Editor.panel.removeClass('visible');
+            },
+            toggleVisibility:function () {
+                if(Editor.isVisible()){
+                    Editor.hide();
+                }else{
+                    Editor.show()
+                }
+            },
+            saveChanges:function(){
+                var activeTab = $('.tab-area .tab.active');
+                var tabName = activeTab.attr('data-tab');
+                var data = {};
+                data[tabName] = activeTab.val();
+                $.ajax({
+                    url:'/api/resumes/{{ resume.id }}/',
+                    method:'PUT',
+                    contentType:'application/json',
+                    data:JSON.stringify(data)
+                })
+            }
+
+        };
+
+
+        function SetEditorButtons(buttonList) {
+
+        }
+
+        function EditResume(){
+
+        }
+
+        function ChangeMarkup(){
+            SetEditorHeader('Editing Resume Markup');
+        }
+    </script>
+{% endblock %}

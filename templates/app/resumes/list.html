@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="ui container">
+    <div class="ui segment">
+        <button class="ui button blue" onclick="CreateNewResume()">NEW RESUME</button>
+        <div class="ui divided list">
+            {% for resume in resumes %}
+                <a class="item" href="/resumes/{{ resume.id }}/">{{ resume.name }}</a>
+            {% endfor %}
+        </div>
+
+    </div>
+
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+
+    window.addEventListener('load', function(){
+
+    });
+
+    function CreateNewResume(){
+        Resume.createNewResume('Default Name', function(resume){
+            if ('id' in resume){
+                window.location = '/resumes/' + resume.id + '/';
+            }
+        })
+    }
+
+</script>
+{% endblock %}

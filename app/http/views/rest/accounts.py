@@ -3,8 +3,13 @@ from rest_framework.authentication import SessionAuthentication, TokenAuthentica
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate, logout
+import re
 
 from rest_framework.serializers import ModelSerializer
+
+
+EMAIL_REGEX = r'.+@.+[.].+'
+
 
 class UserSerializer(ModelSerializer):
     class Meta:
@@ -13,7 +18,7 @@ class UserSerializer(ModelSerializer):
 
 
 # /api/sessions
-class SessionView(APIView):
+class AccountView(APIView):
 
     def get(self, request: Request):
         user = request.user  # type: User
@@ -23,17 +28,20 @@ class SessionView(APIView):
             return Response(UserSerializer(instance=user).data)
 
     def post(self, request):
-        username = request.POST.get('email')
-        password = request.POST.get('password')
+        username =          request.POST.get('email')
+        password =          request.POST.get('password')
         context = {}
-        if username and password:
-            user = authenticate(username=username, password=password)
-            if user is not None:
-                login(request, user)
-                return Response(UserSerializer(instance=user).data)
-            else:
-                return Response(status=401)
 
-    def delete(self, request):
-        logout(request)
-        return Response(status=200)
+        if not username or not re.findall(EMAIL_REGEX, username):
+            return Response({'message':'Must provide a valid email.'}, status=400)
+
+        if not password:
+            return Response({'message':'Must provide a password'}, status=400)
+        try:
+            user = User.objects.get(username=username)
+            return Response({'message':'Email already used.'}, status=400)
+        except:
+            pass
+        user = User.objects.create(username=username, email=username, password=password)
+        login(request, user)
+        return Response(UserSerializer(instance=user).data)

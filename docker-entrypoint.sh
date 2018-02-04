@@ -10,7 +10,7 @@ while true;do
 
     python3 manage.py runworker --threads 2 &
     PID=$!
-    inotifywait --format='%f modified.  Reloading.' -e modify -r . --exclude='.*[^p][^y]$'
+    inotifywait --format='%f modified.  Reloading.' -e modify -r ./app --exclude="[.](css|html|js|pyc)"
     kill $PID
 
 done

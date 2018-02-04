@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ resume.name }}</title>
+    <style>
+        {{ resume.theme.stylesheet }}
+    </style>
+</head>
+<body>
+    {{ resume.layout.markup }}
+
+{% for script in resume.scripts.all %}
+    <script name="{{ script.name}}">
+        {{ script.text }}
+    </script>
+{% endfor %}
+</body>
+</html>
