@@ -4,7 +4,7 @@
 
 python3 manage.py makemigrations app
 python3 manage.py migrate
-python3 manage.py shell -c "from django.contrib.auth.models import User; User.objects.create_superuser('test@email.com', 'admin@example.com', 'password')"
+python3 manage.py shell -c "from django.contrib.auth.models import User; User.objects.create_superuser('admin@example.com', 'admin@example.com', 'password')"
 daphne -b 0.0.0.0 -p 80 -t 600  --proxy-headers app.asgi:channel_layer &
 while true;do
 

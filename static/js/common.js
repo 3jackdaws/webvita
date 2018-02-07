@@ -84,5 +84,20 @@ var Resume = {
             method:'POST',
             success:callback
         })
-    }  
+    },
+    fetchResume:function(id, callback){
+        $.ajax({
+            url:Resume.resumeEndpoint + id + '/',
+            method:'GET',
+            success:callback
+        })
+    },
+    saveResume:function(id, markup, callback){
+        $.ajax({
+            url:Resume.resumeEndpoint + id + '/',
+            method:'PUT',
+            data:{layout:markup},
+            success:callback
+        })
+    }
 };

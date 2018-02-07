@@ -1,0 +1,37 @@
+
+<div class="ui grid container">
+    <div class="row">
+        <div class="sixteen wide column">
+            <div class="rs-top rs-field">
+
+            </div>
+        </div>
+
+    </div>
+    <div class="eight wide column" style="border-right: 1px solid #ddd">
+        <h1>Education</h1>
+        <div class="rs-field education" data-template="education">
+
+        </div>
+    </div>
+    <div class="eight wide column">
+        <h1>Skills</h1>
+        <div class="rs-field">
+
+        </div>
+    </div>
+</div>
+
+<script>
+    let Template = {
+        education:function(obj){
+            return `
+                <span class='school'>${obj.school}</span>
+                <br>
+                <span class='degree'>${obj.degree}</span>
+                <br>
+                <span class='date'>${obj.date}</span>
+            `;
+        }
+    }
+</script>

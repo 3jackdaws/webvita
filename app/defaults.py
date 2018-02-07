@@ -1,0 +1,5 @@
+DEFAULT_RESUME_MARKUP = """
+
+
+
+"""

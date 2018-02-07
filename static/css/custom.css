@@ -106,7 +106,7 @@ body{
     border-bottom: 1px solid #222 !important;
 }
 
-*:not(.circular), *:not(.loading){
+*:not(.circular){
     border-radius: 0 !important;
 }
 
@@ -121,3 +121,26 @@ body{
 
 }
 
+
+
+
+
+
+#resume{
+    background-color: white;
+    box-shadow: 1px 1px 15px rgba(0,0,0,0.4);
+    width: 100%;
+    min-height: 600px;
+}
+
+.clickable{
+    cursor: pointer;
+}
+
+.ui.styled.accordion .title{
+    color: #222 !important;
+}
+
+i.add:hover{
+    color: red;
+}

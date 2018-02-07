@@ -1,0 +1,253 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div class="ui padded grid">
+        <div class='four wide column'>
+            <div class="ui buttons" style="margin-bottom: 10px;">
+                <button class="ui button green" onclick="SaveResume()">SAVE</button>
+            </div>
+            <div class="ui styled accordion" style="width: 100%">
+                <div class="title">
+                    <i class="icon dropdown" ></i>
+                    Basics
+
+
+                </div>
+                <div class="content rs-sidepanel">
+                    {% for name,text in basic_components %}
+                        <div class="rs-item basic" data-name="{{ name }}">{{ text }}</div>
+                    {% endfor %}
+                </div>
+    {# EDUCATION #}
+                <div class="title">
+                    <i class="icon dropdown" ></i>
+                    Education
+                    <i class="icon add" style="float: right;" onclick="AddEducation(event)"></i>
+                </div>
+
+                <div class="content rs-sidepanel">
+                    {% for item in education %}
+                        <div class="rs-item education" meta='{{ item.to_json }}')>{{ item.school }}<br><b>{{ item.degree }}</b></div>
+                    {% endfor %}
+                    {% if not skills %}
+                        No skills
+                    {% endif %}
+                </div>
+ {# SKILLS #}
+                <div class="title">
+                    <i class="icon dropdown" ></i>
+                    Skills
+                    <i class="icon add" style="float: right;" onclick="AddSkill(event)"></i>
+                </div>
+                <div class="content rs-sidepanel">
+                    {% for skill in skills %}
+                        <div class="rs-item skill">{{ skill.name }}</div>
+                    {% endfor %}
+                    {% if not skills %}
+                        No skills
+                    {% endif %}
+                </div>
+
+                <div class="title">
+                    <i class="icon dropdown" ></i>
+                    Layout
+                    <i class="icon add" style="float: right;"></i>
+                </div>
+                <div class="content ">
+                    {% for layout in layouts %}
+                        <div class="layout clickable">{{ layout.name }}</div>
+                    {% endfor %}
+
+                </div>
+                <div class="title">
+                    <i class="icon dropdown" ></i>
+                    Theme
+                    <i class="icon add" style="float: right;"></i>
+                </div>
+                <div class="content">
+                    {% for theme in themes %}
+                        <div class="theme clickable">{{ theme.name }}</div>
+                    {% endfor %}
+                </div>
+                <div class="title">
+                    <i class="icon dropdown" ></i>
+                    Scripts
+                    <i class="icon add" style="float: right;"></i>
+                </div>
+                <div class="content">
+                    {% for script in scripts %}
+                        <div class="script clickable">{{ script.name }}</div>
+                    {% endfor %}
+                </div>
+
+            </div>
+            <div class="draggable-trash" style="min-height: 60px; text-align: center; display: flex; justify-content: center; align-items: center">
+                <i class="huge icon trash">
+
+                </i><br>
+            </div>
+        </div>
+        <div class='twelve wide column'>
+            <div id="resume">
+
+
+
+            </div>
+        </div>
+
+    </div>
+
+
+
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="/static/js/sortable.min.js"></script>
+    <script>
+
+        window.addEventListener('load', function () {
+            $('.tabular.menu .item').tab();
+
+            $('.accordion').accordion({exclusive:false});
+
+            Resume.fetchResume('{{ resume.id }}', function (resume) {
+                $('#resume').html(resume.layout.markup);
+
+                $.each($('.rs-sidepanel'), function (i, e) {
+                    Sortable.create(e, {
+                        group: {name: "rs", pull: 'clone', put:false},
+                        ghostClass:'.item-ghost',
+                        sort:false
+                    });
+                });
+
+                $.each($('.rs-field'), function (i, e) {
+                    Sortable.create(e, {
+                        group: "rs",
+                        ghostClass:'.item-ghost',
+                        onAdd:function (event) {
+                            let template = e.getAttribute('data-template');
+                            if(template){
+                                let object = event.item;
+                                let html = Template[template](JSON.parse(object.getAttribute('meta')));
+                                object.innerHTML = html;
+                            }
+                        }
+                    });
+                });
+
+                $.each($('.draggable-trash'), function (i,e){
+                    Sortable.create(e, {
+                        group:'rs',
+                        onAdd:function (event) {
+                            event.item.parentNode.removeChild(event.item);
+
+                        }
+                    })
+                });
+            });
+
+
+
+        });
+
+    function AddSkill(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        var content = `
+        <div class='ui input fluid'>
+            <input id='modal-input'>
+        </div>
+
+        `;
+
+        var buttons = `
+            <button class='ui negative button'>CANCEL</button>
+            <button class='ui positive button' onclick='SubmitSkill()'>ADD</button>
+        `;
+        Modal.display('Enter Skill', content, buttons);
+    }
+
+    function SubmitSkill(){
+        let skill = $('#modal-input').val();
+        console.log(skill);
+        $.ajax({
+            url:'/api/skills/',
+            method:'POST',
+            data:{skill:skill},
+            success:function (res) {
+                console.log(res);
+            }
+        })
+    }
+
+    function AddEducation(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        var content = `
+        <form class='ui form' id='modal-form' onsubmit='SubmitEducation(event, this)'>
+            <div class='field'>
+                <label>School</label>
+                <input name='school'>
+            </div>
+            <div class='field'>
+                <label>Degree or Certification</label>
+                <input name='degree'>
+            </div>
+            <div class='field'>
+                <label>Date Acquired</label>
+                <input name='date'>
+            </div>
+        </form>
+        `;
+
+        var buttons = `
+            <button class='ui negative button'>CANCEL</button>
+            <button class='ui positive button' onclick='$("#modal-form").submit()'>ADD</button>
+        `;
+        Modal.display('Enter Education', content, buttons);
+    }
+
+    function SubmitEducation(event, form){
+        event.preventDefault();
+        let data = Form2Object(form);
+        $.ajax({
+            url:'/api/education/',
+            method:'POST',
+            data:data,
+            success:function (res) {
+                console.log(res);
+            }
+        })
+    }
+
+    function SaveResume() {
+        let markup = $('#resume').html();
+        Resume.saveResume('{{ resume.id }}', markup, console.log);
+    }
+
+    var Modal = {
+        node:null,
+        display:function(header, content, buttons){
+            Modal.node =  $(`
+                <div class="ui mini modal">
+                    <div class="header">${header}</div>
+                    <div class="content">
+                        ${content}
+                    </div>
+                    <div class="actions">
+                        ${buttons}
+                    </div>
+                </div>
+            `);
+            $(document.body).append(Modal.node);
+            Modal.node.modal('show');
+        },
+        hide:function () {
+            $(document.body).remove(Modal.node);
+        }
+    }
+    </script>
+{% endblock %}

@@ -23,9 +23,9 @@
                 <div class="item" data-tab="scripts">Scripts</div>
                 <button id="editor-save-button" onclick="Editor.saveChanges()">SAVE CHANGES</button>
             </div>
-            <textarea class="ui tab edit-textbox active" data-tab="layout"></textarea>
-            <textarea class="ui tab edit-textbox" data-tab="theme"></textarea>
-            <textarea class="ui tab edit-textbox" data-tab="scripts"></textarea>
+            <textarea id="layout-editor" class="ui tab edit-textbox active" data-tab="layout"></textarea>
+            <textarea id="theme-editor" class="ui tab edit-textbox" data-tab="theme"></textarea>
+            <textarea id="scripts-editor" class="ui tab edit-textbox" data-tab="scripts"></textarea>
         </div>
     </div>
 
@@ -36,11 +36,16 @@
 
         window.addEventListener('load', function () {
             $('.tabular.menu .item').tab();
+            Editor.loadEditorFields('layout theme script');
         });
 
         var Editor = {
             panel:$('#resume-edit-panel'),
             saveButton:$('#editor-save-button'),
+            resumeId:{{ resume.id }},
+            activeLayout:{},
+            activeTheme:{},
+            activeScript:{},
             isVisible:function () {
                 return Editor.panel.hasClass('visible');
             },
@@ -71,8 +76,24 @@
                     contentType:'application/json',
                     data:JSON.stringify(data)
                 })
+            },
+            loadEditorFields:function (fields) {
+                Resume.fetchResume(Editor.resumeId, function (resume) {
+                    console.log(fields.indexOf('layout'));
+                    if(fields.indexOf('layout') !== -1){
+                        $('#layout-editor').html(resume.layout.markup);
+                        Editor.activeLayout = resume.layout;
+                    }
+                    if(fields.indexOf('theme') !== -1){
+                        $('#theme-editor').html(resume.theme.markup);
+                        Editor.activeTheme = resume.theme;
+                    }
+                    if(fields.indexOf('script') !== -1){
+                        $('#script-editor').html(resume.script.markup);
+                        Editor.activeScript = resume.script;
+                    }
+                })
             }
-
         };
 
 

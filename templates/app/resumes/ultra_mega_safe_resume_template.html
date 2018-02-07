@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <title>{{ resume.name }}</title>
     <style>
-        {{ resume.theme.stylesheet }}
+        {{ resume.theme.stylesheet | safe }}
     </style>
 </head>
 <body>
-    {{ resume.layout.markup }}
+    {{ resume.layout.markup | safe }}
 
-{% for script in resume.scripts.all %}
-    <script name="{{ script.name}}">
-        {{ script.text }}
-    </script>
-{% endfor %}
+
+<script name="{{ resume.script.name}}">
+    {{ resume.script.text | safe }}
+</script>
+
 </body>
 </html>

@@ -30,6 +30,8 @@ class AccountView(APIView):
     def post(self, request):
         username =          request.POST.get('email')
         password =          request.POST.get('password')
+        first_name =        request.POST.get('first_name')
+        last_name =        request.POST.get('last_name')
         context = {}
 
         if not username or not re.findall(EMAIL_REGEX, username):
@@ -42,6 +44,6 @@ class AccountView(APIView):
             return Response({'message':'Email already used.'}, status=400)
         except:
             pass
-        user = User.objects.create(username=username, email=username, password=password)
+        user = User.objects.create(username=username, email=username, password=password, first_name=first_name, last_name=last_name)
         login(request, user)
         return Response(UserSerializer(instance=user).data)

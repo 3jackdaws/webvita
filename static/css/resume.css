@@ -1,0 +1,69 @@
+.rs-top{
+    min-height: 200px;
+    text-align: center;
+    padding: 30px;
+    font-size: 2em;
+    font-family: serif;
+    line-height: 1.5em;
+}
+
+.rs-top [data-name=fullname]{
+    font-size: 2em;
+}
+
+.rs-field{
+    min-height: 100px;
+}
+
+.rs-field::drop{
+    background-color: red;
+}
+
+.rs-item{
+    padding: 2px;
+    cursor: pointer;
+}
+
+.rs-sidepanel .rs-item{
+    padding: 5px 15px;
+}
+
+.rs-sidepanel .rs-item:hover{
+    background-color: rgba(0,0,0, 0.1);
+}
+
+
+.item-ghost{
+    display: inline;
+    padding: 5px;
+    background-color: white;
+}
+
+.content.rs-sidepanel{
+    padding: 5px 0 !important;
+}
+
+.rs-field.education{
+    font-size: 1.3em;
+}
+
+.education .school{
+    font-weight: 100;
+    color: red;
+}
+
+.education .degree{
+    font-weight: bold;
+    font-size: larger;
+}
+
+
+.education .date{
+    font-style: italic;
+
+}
+
+#resume{
+    position: relative;
+    padding: 30px;
+}
