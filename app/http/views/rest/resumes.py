@@ -17,6 +17,73 @@ class LayoutSerializer(ModelSerializer):
             'name',
             'markup'
         )
+class SkillSerializer(ModelSerializer):
+    class Meta:
+        model = Skill
+        fields = (
+            'id',
+            'name',
+        )
+
+class SkillView(APIView):
+
+    http_user = True
+
+    def get(self, request, id):
+        try:
+            skill = Skill.objects.filter(owner=request.user).get(id=id)
+        except:
+            return Response(status=404)
+        return Response(SkillSerializer(instance=skill).data)
+
+    def post(self, request, _):
+        if 'skill' not in request.data:
+            return Response(status=404)
+
+        skill = Skill.objects.create(name=request.data['skill'], owner=request.user)
+
+        return Response(SkillSerializer(skill).data)
+
+
+class EducationSerializer(ModelSerializer):
+    class Meta:
+        model = Education
+        fields = (
+            'id',
+            'school',
+            'degree',
+            'date',
+        )
+
+class EducationView(APIView):
+
+    http_user = True
+
+    def get(self, request, id):
+        try:
+            edu = Education.objects.filter(owner=request.user).get(id=id)
+        except:
+            return Response(status=404)
+        return Response(EducationSerializer(edu).data)
+
+    def post(self, request, _):
+        school = request.data.get('school')
+        degree = request.data.get('degree')
+        date = request.data.get('date')
+
+        if not (school and degree and date):
+            print('WANT school, degree, date, got: ', dict(request.data))
+            return Response(status=400)
+
+        education = Education.objects.create(
+            school=school,
+            degree=degree,
+            date=date,
+            owner=request.user
+        )
+
+        return Response(EducationSerializer(education).data)
+
 
 class ResumeSerializer(ModelSerializer):
     layout = LayoutSerializer()
@@ -94,46 +161,18 @@ class ResumeView(APIView):
 
 
 
-class SkillView(APIView):
+class AttributesView(APIView):
 
     http_user = True
 
-    def get(self, request, id):
-        try:
-            resume = Skill.objects.get(id=id)
-        except:
-            return Response(status=404)
-        return Response(ResumeSerializer(instance=resume).data)
-
-    def post(self, request, _):
-        if 'skill' not in request.data:
-            return Response(status=404)
-
-        skill = Skill.objects.create(name=request.data['skill'], owner=request.user)
-
-        return Response({
-            'skill':skill.name
-        })
-
-
-class EducationView(APIView):
-
-    http_user = True
-
-    def post(self, request, _):
-        school = request.data.get('school')
-        degree = request.data.get('degree')
-        date = request.data.get('date')
-
-        if not (school and degree and date):
-            print('WANT school, degree, date, got: ', dict(request.data))
-            return Response(status=400)
-
-        education = Education.objects.create(
-            school=school,
-            degree=degree,
-            date=date,
-            owner=request.user
-        )
-
-        return Response(dict(request.data))
+    def get(self, request):
+        user = request.user
+        attributes = {
+            'basics':[
+                {'tag':'fullname', 'value':f'{user.first_name} {user.last_name}'},
+                {'tag':'email', 'value':f'{user.email}'},
+            ],
+            'skills':[SkillSerializer(skill).data for skill in Skill.objects.filter(owner=request.user)],
+            'education':[EducationSerializer(edu).data for edu in Education.objects.filter(owner=request.user)]
+        }
+        return Response(attributes)

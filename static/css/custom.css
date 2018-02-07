@@ -144,3 +144,9 @@ body{
 i.add:hover{
     color: red;
 }
+
+.display-none{
+    display: none !important;
+    height: 0 !important;
+    overflow: hidden !important;
+}

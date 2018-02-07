@@ -4,8 +4,9 @@
 
     <div class="ui padded grid">
         <div class='four wide column'>
-            <div class="ui buttons" style="margin-bottom: 10px;">
+            <div class="ui buttons fluid" style="margin-bottom: 10px;">
                 <button class="ui button green" onclick="SaveResume()">SAVE</button>
+                <button class="ui button red" onclick="ArchiveResume()">ARCHIVE</button>
             </div>
             <div class="ui styled accordion" style="width: 100%">
                 <div class="title">
@@ -14,10 +15,8 @@
 
 
                 </div>
-                <div class="content rs-sidepanel">
-                    {% for name,text in basic_components %}
-                        <div class="rs-item basic" data-name="{{ name }}">{{ text }}</div>
-                    {% endfor %}
+                <div id="sidepanel-basics" class="content rs-sidepanel">
+
                 </div>
     {# EDUCATION #}
                 <div class="title">
@@ -26,13 +25,8 @@
                     <i class="icon add" style="float: right;" onclick="AddEducation(event)"></i>
                 </div>
 
-                <div class="content rs-sidepanel">
-                    {% for item in education %}
-                        <div class="rs-item education" meta='{{ item.to_json }}')>{{ item.school }}<br><b>{{ item.degree }}</b></div>
-                    {% endfor %}
-                    {% if not skills %}
-                        No skills
-                    {% endif %}
+                <div id="sidepanel-education" class="content rs-sidepanel">
+
                 </div>
  {# SKILLS #}
                 <div class="title">
@@ -40,13 +34,8 @@
                     Skills
                     <i class="icon add" style="float: right;" onclick="AddSkill(event)"></i>
                 </div>
-                <div class="content rs-sidepanel">
-                    {% for skill in skills %}
-                        <div class="rs-item skill">{{ skill.name }}</div>
-                    {% endfor %}
-                    {% if not skills %}
-                        No skills
-                    {% endif %}
+                <div id="sidepanel-skills" class="content rs-sidepanel">
+
                 </div>
 
                 <div class="title">
@@ -105,36 +94,54 @@
 
 {% block scripts %}
     <script src="/static/js/sortable.min.js"></script>
+    <script src="/static/js/resume.js"></script>
     <script>
 
         window.addEventListener('load', function () {
             $('.tabular.menu .item').tab();
 
-            $('.accordion').accordion({exclusive:false});
+            $('.accordion').accordion({exclusive:false,animateChildren:false});
 
-            Resume.fetchResume('{{ resume.id }}', function (resume) {
-                $('#resume').html(resume.layout.markup);
+            LoadResume();
+            LoadSidePanel();
+
+
+
+
+
+
+
+
+        });
+
+        function LoadSidePanel(){
+            User.fetchAttributes(function (attributes) {
+                let $basics = $('#sidepanel-basics');
+                $basics.html('');
+                $.each(attributes.basics, function (i, e) {
+                    $basics.append(`<div class="rs-item basic" data-name="${e.tag}">${e.value}</div>`);
+                });
+
+                let $education = $('#sidepanel-education');
+                $education.html('');
+                $.each(attributes.education, function (i, e) {
+
+                    let edu = $(`<div class="rs-item education">${ e.school }<br><b>${ e.degree }</b></div>`);
+                    edu[0].meta = e;
+                    $education.append(edu);
+                });
+
+                let $skills = $('#sidepanel-skills');
+                $skills.html('');
+                $.each(attributes.skills, function (i, e) {
+                    $skills.append(`<div class="rs-item skill">${ e.name }</div>`);
+                });
 
                 $.each($('.rs-sidepanel'), function (i, e) {
                     Sortable.create(e, {
                         group: {name: "rs", pull: 'clone', put:false},
-                        ghostClass:'.item-ghost',
+                        ghostClass:'item-ghost',
                         sort:false
-                    });
-                });
-
-                $.each($('.rs-field'), function (i, e) {
-                    Sortable.create(e, {
-                        group: "rs",
-                        ghostClass:'.item-ghost',
-                        onAdd:function (event) {
-                            let template = e.getAttribute('data-template');
-                            if(template){
-                                let object = event.item;
-                                let html = Template[template](JSON.parse(object.getAttribute('meta')));
-                                object.innerHTML = html;
-                            }
-                        }
                     });
                 });
 
@@ -143,15 +150,41 @@
                         group:'rs',
                         onAdd:function (event) {
                             event.item.parentNode.removeChild(event.item);
-
                         }
                     })
                 });
             });
+        }
+
+        function LoadResume(){
+            Resume.fetchResume('{{ resume.id }}', function (resume) {
+                $('#resume').html(resume.layout.markup);
+
+                $.each($('.rs-field'), function (i, e) {
+                    Sortable.create(e, {
+                        group: "rs",
+                        ghostClass:'item-ghost',
+{#                        chosenClass:'',#}
+                        animation:150,
+                        onAdd:function (event) {
+                            let template = e.getAttribute('data-template');
+                            if(template){
+                                try{
+                                    let object = event.item;
+                                    let html = Template[template](object.meta);
+                                    object.innerHTML = html;
+                                }catch (e){
+                                    console.error(e);
+                                }
+
+                            }
+                        }
+                    });
+                });
 
 
-
-        });
+            });
+        }
 
     function AddSkill(event) {
         event.preventDefault();

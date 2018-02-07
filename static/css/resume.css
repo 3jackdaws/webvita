@@ -34,9 +34,8 @@
 
 
 .item-ghost{
-    display: inline;
     padding: 5px;
-    background-color: white;
+    border: 2px dashed #ddd;
 }
 
 .content.rs-sidepanel{
@@ -44,7 +43,7 @@
 }
 
 .rs-field.education{
-    font-size: 1.3em;
+    font-size: 1.1em;
 }
 
 .education .school{
