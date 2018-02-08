@@ -26,7 +26,17 @@
                 </div>
 
                 <div id="sidepanel-education" class="content rs-sidepanel">
+                    <div class="rs-item">No Education</div>
+                </div>
+    {# WORK EXPERIENCE #}
+                <div class="title">
+                    <i class="icon dropdown" ></i>
+                    Work Experience
+                    <i class="icon add" style="float: right;" onclick="AddEducation(event)"></i>
+                </div>
 
+                <div id="sidepanel-education" class="content rs-sidepanel">
+                    <div class="rs-item">No Work Experience</div>
                 </div>
  {# SKILLS #}
                 <div class="title">
@@ -35,7 +45,7 @@
                     <i class="icon add" style="float: right;" onclick="AddSkill(event)"></i>
                 </div>
                 <div id="sidepanel-skills" class="content rs-sidepanel">
-
+                    <div class="rs-item">No Skills</div>
                 </div>
 
                 <div class="title">
@@ -87,7 +97,9 @@
 
     </div>
 
+    <div id="mini-modal" class="ui mini modal">
 
+    </div>
 
 
 {% endblock %}
@@ -205,13 +217,14 @@
 
     function SubmitSkill(){
         let skill = $('#modal-input').val();
-        console.log(skill);
+        Modal.destroy();
         $.ajax({
             url:'/api/skills/',
             method:'POST',
             data:{skill:skill},
             success:function (res) {
                 console.log(res);
+                LoadSidePanel();
             }
         })
     }
@@ -246,12 +259,14 @@
     function SubmitEducation(event, form){
         event.preventDefault();
         let data = Form2Object(form);
+        Modal.destroy();
         $.ajax({
             url:'/api/education/',
             method:'POST',
             data:data,
             success:function (res) {
                 console.log(res);
+                LoadSidePanel();
             }
         })
     }
@@ -262,24 +277,25 @@
     }
 
     var Modal = {
-        node:null,
+        node:$('#mini-modal').modal(),
         display:function(header, content, buttons){
-            Modal.node =  $(`
-                <div class="ui mini modal">
-                    <div class="header">${header}</div>
-                    <div class="content">
-                        ${content}
-                    </div>
-                    <div class="actions">
-                        ${buttons}
-                    </div>
+            let html = `
+                <div class="header">${header}</div>
+                <div class="content">
+                    ${content}
                 </div>
-            `);
-            $(document.body).append(Modal.node);
+                <div class="actions">
+                    ${buttons}
+                </div>
+
+            `;
+            Modal.node.html(html);
             Modal.node.modal('show');
         },
-        hide:function () {
-            $(document.body).remove(Modal.node);
+        destroy:function () {
+            Modal.node.modal('hide');
+            Modal.node.html('');
+
         }
     }
     </script>

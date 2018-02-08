@@ -25,9 +25,10 @@ class SessionView(APIView):
     def post(self, request):
         username = request.POST.get('email')
         password = request.POST.get('password')
-        context = {}
+        print(username, password)
         if username and password:
             user = authenticate(username=username, password=password)
+            print(user)
             if user is not None:
                 login(request, user)
                 return Response(UserSerializer(instance=user).data)
