@@ -2,6 +2,5 @@ django
 pytest
 djangorestframework
 PyYaml
-channels
-asgi_redis
 psycopg2
+gunicorn

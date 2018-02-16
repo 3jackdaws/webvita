@@ -26,7 +26,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'channels',
     'app',
     'rest_framework',
     'rest_framework.authtoken',
@@ -102,15 +101,6 @@ REST_FRAMEWORK = {
     )
 }
 
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "asgi_redis.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("broker", 6379)],
-        },
-        "ROUTING": "app.ws.routing.channel_routing",
-    },
-}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/

@@ -20,8 +20,6 @@ services:
     depends_on:
       - web
 
-  broker:
-    image: 'redis:alpine'
 
   database:
     image: 'postgres'

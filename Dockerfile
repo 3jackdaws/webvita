@@ -6,7 +6,6 @@ RUN             mkdir /app
 WORKDIR         /app
 ADD             . .
 
-RUN             apt-get update && apt-get install -y inotify-tools
 RUN             pip install -r requirements.txt
 
 ENTRYPOINT      bash -c 'sh docker-entrypoint.sh'
