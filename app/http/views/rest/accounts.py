@@ -4,11 +4,26 @@ from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate, logout
 import re
+from app.models import ResumeObject
 
 from rest_framework.serializers import ModelSerializer
 
 
 EMAIL_REGEX = r'.+@.+[.].+'
+
+
+def create_basics_for_user(user:User):
+    import json
+    # Name
+    ResumeObject.objects.create(type='basics', data=json.dumps({
+        'tag':'fullname',
+        'value':f'{user.first_name} {user.last_name}'
+    }), owner=user)
+    # Email
+    ResumeObject.objects.create(type='basics', data=json.dumps({
+        'tag': 'email',
+        'value': f'{user.email}'
+    }), owner=user)
 
 
 class UserSerializer(ModelSerializer):
@@ -46,4 +61,5 @@ class AccountView(APIView):
             pass
         user = User.objects.create(username=username, email=username, password=password, first_name=first_name, last_name=last_name)
         login(request, user)
+        create_basics_for_user(user)
         return Response(UserSerializer(instance=user).data)

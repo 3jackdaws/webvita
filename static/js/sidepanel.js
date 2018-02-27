@@ -164,9 +164,12 @@ let Sidepanel = {
                     if (e.id === CurrentResume.layout) {
                         active = 'active';
                     }
-                    let div = $(`<div class="item layout ${active}" onclick="Sidepanel.Layouts.select(${e.id})">Layout ${ e.id }</div>`);
+                    let div = $(`<div class="rs-sidepanel-item item layout ${active}" onclick="Sidepanel.Layouts.select(${e.id})">Layout ${ e.id }</div>`);
+                    div[0].meta = e;
                     $panel.append(div);
                 });
+                Sidepanel.makeDraggable();
+
             });
         },
         select:function(id){
@@ -209,9 +212,11 @@ let Sidepanel = {
                     if (e.id === CurrentResume.theme) {
                         active = 'active';
                     }
-                    let div = $(`<div class="item ${objectType} ${active}" onclick="Sidepanel.Themes.select(${e.id})">Theme ${ e.id }</div>`);
+                    let div = $(`<div class="rs-sidepanel-item item ${objectType} ${active}" onclick="Sidepanel.Themes.select(${e.id})">Theme ${ e.id }</div>`);
+                    div[0].meta = e;
                     $panel.append(div);
                 });
+                Sidepanel.makeDraggable();
             });
         },
         select:function(id){
@@ -261,5 +266,6 @@ let Sidepanel = {
         Sidepanel.Experience.load();
         Sidepanel.Skills.load();
         Sidepanel.Layouts.load();
+        Sidepanel.Themes.load();
     }
 };

@@ -96,6 +96,7 @@ class ResumeView(APIView):
 
     def put(self, request:Request, id):
         user_resumes = Resume.objects.filter(owner=request.user)
+        data = json.loads(request.POST.get('payload', '{}'))
         try:
             resume = user_resumes.get(id=id)
         except:
@@ -103,7 +104,13 @@ class ResumeView(APIView):
 
         serializer = ResumeSerializer(resume)
 
-        resume = serializer.update(resume, request.data)
+        print(json.dumps(data, indent=2))
+
+        # for attr in ['layout_id', 'theme_id', 'script_id']:
+        #     if request.data.get(attr) == resume.__getattribute__(attr):
+        #         request.data.pop(attr)
+
+        resume = serializer.update(resume, data)
 
         return Response(ResumeSerializer(resume).data)
 
@@ -141,6 +148,17 @@ class ObjectsView(APIView):
             return Response(ObjectSerializer(object).data)
         else:
             return Response(object.errors)
+
+    def put(self, request, id):
+        print(request.data)
+        group = ResumeObject.objects.filter(owner=request.user)
+        obj = group.get(id=id)
+        if not obj:
+            return Response(status=403)
+
+        serializer = ObjectSerializer(obj)
+        obj = serializer.update(obj, request.data)
+        return Response(ResumeObject(obj).data)
 
     def delete(self, request, id):
         group = ResumeObject.objects.filter(owner=request.user)

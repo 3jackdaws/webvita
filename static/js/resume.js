@@ -14,7 +14,7 @@ var Resume = {
         $.ajax({
             url:Resume.resumeEndpoint + id + '/',
             method:'PUT',
-            data:data,
+            data:{payload:JSON.stringify(data)},
             success:callback
         })
     },
@@ -38,6 +38,22 @@ var Resume = {
             url:'/api/objects/' + id,
             method:'GET',
             success:function (results) {
+                try{
+                    results.data = JSON.parse(results.data);
+                }catch(e){
+
+                }
+                callback(results);
+            }
+        })
+    },
+    setObject:function(id, data, callback){
+        $.ajax({
+            url:'/api/objects/' + id,
+            method:'PUT',
+            data:{data:JSON.stringify(data)},
+            success:function (results) {
+                console.log(results);
                 try{
                     results.data = JSON.parse(results.data);
                 }catch(e){

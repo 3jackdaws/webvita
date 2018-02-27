@@ -62,7 +62,7 @@
                     <i class="icon add" style="float: right;" onclick="Sidepanel.Layouts.showModal(event)"></i>
                 </div>
                 <div class="content ">
-                    <div id="sidepanel-layouts" class="ui selection list">
+                    <div id="sidepanel-layouts" class="ui selection list rs-sidepanel">
 
                     </div>
 
@@ -73,7 +73,7 @@
                     <i class="icon add" style="float: right;" onclick="Sidepanel.Themes.showModal(event)"></i>
                 </div>
                 <div class="content">
-                    <div id="sidepanel-themes" class="ui selection list">
+                    <div id="sidepanel-themes" class="ui selection list rs-sidepanel">
 
                     </div>
                 </div>
@@ -118,6 +118,10 @@
     <script src="/static/js/sidepanel.js"></script>
     <script>
 
+        window.addEventListener('beforeunload', function () {
+            if (CurrentResume.edited) event.returnValue = "Are you sure you want to leave?  YOu have unsaved changes.";
+        });
+
         window.addEventListener('load', function () {
             $('.tabular.menu .item').tab();
 
@@ -134,12 +138,18 @@
                     onAdd:function (event) {
                         let item = event.item;
                         if(item.classList.contains('rs-sidepanel-item')){
+
                             let objectType = item.meta.type;
-                            let buttons = `
-                                <button class='ui button' onclick="Modal.destroy()">CANCEL</button>
-                                <button class='ui negative button' onclick='Resume.deleteObject(${item.meta.id}, Sidepanel.refreshAll)'>DELETE</button>
-                            `;
-                            Modal.display('Confirm Delete?', `Are you sure you want to delete "${item.innerHTML}"?`, buttons);
+                            if(item.classList.contains('active')){
+                                Modal.display('Error', `You can't delete an active ${objectType}`, '<button class="ui button" onclick="Modal.destroy()">OK</button>');
+
+                            }else{
+                                let buttons = `
+                                    <button class='ui button' onclick="Modal.destroy()">CANCEL</button>
+                                    <button class='ui negative button' onclick='Resume.deleteObject(${item.meta.id}, Sidepanel.refreshAll)'>DELETE</button>
+                                `;
+                                Modal.display('Confirm Delete?', `Are you sure you want to delete "${item.innerHTML}"?`, buttons);
+                            }
                         }
                         event.item.parentNode.removeChild(event.item);
                     }
@@ -158,6 +168,7 @@
                     ghostClass:'item-ghost',
                     animation:150,
                     onAdd:function (event) {
+                        CurrentResume.edited = true;
                         let object = event.item;
                         object.classList.remove('rs-sidepanel-item');
                         let template = e.getAttribute('data-template');
@@ -173,6 +184,9 @@
                             }
 
                         }
+                    },
+                    onRemove:function(event){
+                        CurrentResume.edited = true;
                     }
                 });
             });
@@ -180,13 +194,15 @@
         CurrentResume = {};
         function LoadResume(){
             Resume.fetchResume('{{ resume.id }}', function (resume) {
-                LoadedResume = resume;
-                CurrentResume = LoadedResume;
+                CurrentResume = resume;
                 $('#resume-name').val(resume.name);
-
+                console.log(resume.layout);
                 Resume.getObject(resume.layout, function (layout) {
                     $('#resume').html(layout.data.text);
                     MakeResumeDraggable();
+                });
+                Resume.getObject(resume.theme, function (theme) {
+                    $('#styles').html(theme.data.text);
                 });
 
 
@@ -206,11 +222,15 @@
                 layout_id:CurrentResume.layout,
                 theme_id:CurrentResume.theme,
                 script_id:CurrentResume.script,
-                layout:{text:markup},
                 name:name
             },
-            console.log
+            function (o) {
+                CurrentResume.edited = false;
+            }
         );
+        Resume.setObject(CurrentResume.layout, {text:markup}, function (o) {
+            console.log('Update Object', o);
+        });
     }
 
     var Modal = {
