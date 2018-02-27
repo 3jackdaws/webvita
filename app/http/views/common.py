@@ -3,7 +3,7 @@ import mimetypes
 from django.http import HttpResponse, FileResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
-from app.models import Resume, Skill, ResumeLayout, ResumeTheme, ResumeScript, Education
+from app.models import Resume, ResumeObject
 
 
 from app.settings import STATIC_BASE, BASE_DIR
@@ -43,16 +43,6 @@ def render_single_resume(request, resume_id):
     context = {
         'resume': resume,
         'title':resume.name,
-        'basic_components':[
-            ('fullname', f'{request.user.first_name} {request.user.last_name}'),
-            ('email', request.user.email),
-        ],
-        'skills':Skill.objects.filter(owner=request.user),
-        'layouts':ResumeLayout.objects.filter(owner=request.user),
-        'themes':ResumeTheme.objects.filter(owner=request.user),
-        'scripts':ResumeScript.objects.filter(owner=request.user),
-        'education':Education.objects.filter(owner=request.user)
-
     }
     return render(request, 'app/resumes/single2.html', context)
 

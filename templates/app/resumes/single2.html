@@ -1,9 +1,18 @@
 {% extends 'base.html' %}
 
+{% block styles %}
+    <style id="styles">
+
+    </style>
+{% endblock %}
+
 {% block content %}
 
     <div class="ui padded grid">
         <div class='four wide column'>
+            <div class="ui input fluid">
+                <input class="" id="resume-name" value="" style="; font-size: 2em !important; padding: 2px;">
+            </div>
             <div class="ui buttons fluid" style="margin-bottom: 10px;">
                 <button class="ui button green" onclick="SaveResume()">SAVE</button>
                 <button class="ui button red" onclick="ArchiveResume()">ARCHIVE</button>
@@ -12,8 +21,7 @@
                 <div class="title">
                     <i class="icon dropdown" ></i>
                     Basics
-
-
+                    <i class="icon add" style="float: right;" onclick="Sidepanel.Basics.showModal(event)"></i>
                 </div>
                 <div id="sidepanel-basics" class="content rs-sidepanel">
 
@@ -22,62 +30,60 @@
                 <div class="title">
                     <i class="icon dropdown" ></i>
                     Education
-                    <i class="icon add" style="float: right;" onclick="AddEducation(event)"></i>
+                    <i class="icon add" style="float: right;" onclick="Sidepanel.Education.showModal(event)"></i>
                 </div>
 
                 <div id="sidepanel-education" class="content rs-sidepanel">
                     <div class="rs-item">No Education</div>
                 </div>
-    {# WORK EXPERIENCE #}
+    {# EXPERIENCE #}
                 <div class="title">
                     <i class="icon dropdown" ></i>
-                    Work Experience
-                    <i class="icon add" style="float: right;" onclick="AddEducation(event)"></i>
+                    Experience
+                    <i class="icon add" style="float: right;" onclick="Sidepanel.Experience.showModal(event)"></i>
                 </div>
 
-                <div id="sidepanel-education" class="content rs-sidepanel">
-                    <div class="rs-item">No Work Experience</div>
+                <div id="sidepanel-experience" class="content rs-sidepanel">
+                    <div class="rs-item">No Experience</div>
                 </div>
  {# SKILLS #}
                 <div class="title">
                     <i class="icon dropdown" ></i>
                     Skills
-                    <i class="icon add" style="float: right;" onclick="AddSkill(event)"></i>
+                    <i class="icon add" style="float: right;" onclick="Sidepanel.Skills.showModal(event)"></i>
                 </div>
                 <div id="sidepanel-skills" class="content rs-sidepanel">
                     <div class="rs-item">No Skills</div>
                 </div>
-
+ {# LAYOUTS #}
                 <div class="title">
                     <i class="icon dropdown" ></i>
                     Layout
-                    <i class="icon add" style="float: right;"></i>
+                    <i class="icon add" style="float: right;" onclick="Sidepanel.Layouts.showModal(event)"></i>
                 </div>
                 <div class="content ">
-                    {% for layout in layouts %}
-                        <div class="layout clickable">{{ layout.name }}</div>
-                    {% endfor %}
+                    <div id="sidepanel-layouts" class="ui selection list">
+
+                    </div>
 
                 </div>
                 <div class="title">
                     <i class="icon dropdown" ></i>
                     Theme
-                    <i class="icon add" style="float: right;"></i>
+                    <i class="icon add" style="float: right;" onclick="Sidepanel.Themes.showModal(event)"></i>
                 </div>
                 <div class="content">
-                    {% for theme in themes %}
-                        <div class="theme clickable">{{ theme.name }}</div>
-                    {% endfor %}
+                    <div id="sidepanel-themes" class="ui selection list">
+
+                    </div>
                 </div>
                 <div class="title">
                     <i class="icon dropdown" ></i>
                     Scripts
                     <i class="icon add" style="float: right;"></i>
                 </div>
-                <div class="content">
-                    {% for script in scripts %}
-                        <div class="script clickable">{{ script.name }}</div>
-                    {% endfor %}
+                <div id="sidepanel-scripts" class="content">
+
                 </div>
 
             </div>
@@ -88,6 +94,8 @@
             </div>
         </div>
         <div class='twelve wide column'>
+
+
             <div id="resume">
 
 
@@ -107,6 +115,7 @@
 {% block scripts %}
     <script src="/static/js/sortable.min.js"></script>
     <script src="/static/js/resume.js"></script>
+    <script src="/static/js/sidepanel.js"></script>
     <script>
 
         window.addEventListener('load', function () {
@@ -115,165 +124,93 @@
             $('.accordion').accordion({exclusive:false,animateChildren:false});
 
             LoadResume();
-            LoadSidePanel();
+            Sidepanel.refreshAll();
 
 
 
-
+            $.each($('.draggable-trash'), function (i,e){
+                Sortable.create(e, {
+                    group:'rs',
+                    onAdd:function (event) {
+                        let item = event.item;
+                        if(item.classList.contains('rs-sidepanel-item')){
+                            let objectType = item.meta.type;
+                            let buttons = `
+                                <button class='ui button' onclick="Modal.destroy()">CANCEL</button>
+                                <button class='ui negative button' onclick='Resume.deleteObject(${item.meta.id}, Sidepanel.refreshAll)'>DELETE</button>
+                            `;
+                            Modal.display('Confirm Delete?', `Are you sure you want to delete "${item.innerHTML}"?`, buttons);
+                        }
+                        event.item.parentNode.removeChild(event.item);
+                    }
+                })
+            });
 
 
 
 
         });
 
-        function LoadSidePanel(){
-            User.fetchAttributes(function (attributes) {
-                let $basics = $('#sidepanel-basics');
-                $basics.html('');
-                $.each(attributes.basics, function (i, e) {
-                    $basics.append(`<div class="rs-item basic" data-name="${e.tag}">${e.value}</div>`);
-                });
+        function MakeResumeDraggable(){
+            $.each($('.rs-field'), function (i, e) {
+                Sortable.create(e, {
+                    group: "rs",
+                    ghostClass:'item-ghost',
+                    animation:150,
+                    onAdd:function (event) {
+                        let object = event.item;
+                        object.classList.remove('rs-sidepanel-item');
+                        let template = e.getAttribute('data-template');
+                        console.log(template);
+                        if(template){
+                            try{
+                                console.log(object.meta);
+                                let html = Template[template](object.meta);
+                                console.log(html);
+                                object.innerHTML = html;
+                            }catch (e){
+                                console.error(e);
+                            }
 
-                let $education = $('#sidepanel-education');
-                $education.html('');
-                $.each(attributes.education, function (i, e) {
-
-                    let edu = $(`<div class="rs-item education">${ e.school }<br><b>${ e.degree }</b></div>`);
-                    edu[0].meta = e;
-                    $education.append(edu);
-                });
-
-                let $skills = $('#sidepanel-skills');
-                $skills.html('');
-                $.each(attributes.skills, function (i, e) {
-                    $skills.append(`<div class="rs-item skill">${ e.name }</div>`);
-                });
-
-                $.each($('.rs-sidepanel'), function (i, e) {
-                    Sortable.create(e, {
-                        group: {name: "rs", pull: 'clone', put:false},
-                        ghostClass:'item-ghost',
-                        sort:false
-                    });
-                });
-
-                $.each($('.draggable-trash'), function (i,e){
-                    Sortable.create(e, {
-                        group:'rs',
-                        onAdd:function (event) {
-                            event.item.parentNode.removeChild(event.item);
                         }
-                    })
+                    }
                 });
             });
         }
-
+        CurrentResume = {};
         function LoadResume(){
             Resume.fetchResume('{{ resume.id }}', function (resume) {
-                $('#resume').html(resume.layout.markup);
+                LoadedResume = resume;
+                CurrentResume = LoadedResume;
+                $('#resume-name').val(resume.name);
 
-                $.each($('.rs-field'), function (i, e) {
-                    Sortable.create(e, {
-                        group: "rs",
-                        ghostClass:'item-ghost',
-{#                        chosenClass:'',#}
-                        animation:150,
-                        onAdd:function (event) {
-                            let template = e.getAttribute('data-template');
-                            if(template){
-                                try{
-                                    let object = event.item;
-                                    let html = Template[template](object.meta);
-                                    object.innerHTML = html;
-                                }catch (e){
-                                    console.error(e);
-                                }
-
-                            }
-                        }
-                    });
+                Resume.getObject(resume.layout, function (layout) {
+                    $('#resume').html(layout.data.text);
+                    MakeResumeDraggable();
                 });
+
+
 
 
             });
         }
 
-    function AddSkill(event) {
-        event.preventDefault();
-        event.stopPropagation();
-        var content = `
-        <div class='ui input fluid'>
-            <input id='modal-input'>
-        </div>
-
-        `;
-
-        var buttons = `
-            <button class='ui negative button'>CANCEL</button>
-            <button class='ui positive button' onclick='SubmitSkill()'>ADD</button>
-        `;
-        Modal.display('Enter Skill', content, buttons);
-    }
-
-    function SubmitSkill(){
-        let skill = $('#modal-input').val();
-        Modal.destroy();
-        $.ajax({
-            url:'/api/skills/',
-            method:'POST',
-            data:{skill:skill},
-            success:function (res) {
-                console.log(res);
-                LoadSidePanel();
-            }
-        })
-    }
-
-    function AddEducation(event) {
-        event.preventDefault();
-        event.stopPropagation();
-        var content = `
-        <form class='ui form' id='modal-form' onsubmit='SubmitEducation(event, this)'>
-            <div class='field'>
-                <label>School</label>
-                <input name='school'>
-            </div>
-            <div class='field'>
-                <label>Degree or Certification</label>
-                <input name='degree'>
-            </div>
-            <div class='field'>
-                <label>Date Acquired</label>
-                <input name='date'>
-            </div>
-        </form>
-        `;
-
-        var buttons = `
-            <button class='ui negative button'>CANCEL</button>
-            <button class='ui positive button' onclick='$("#modal-form").submit()'>ADD</button>
-        `;
-        Modal.display('Enter Education', content, buttons);
-    }
-
-    function SubmitEducation(event, form){
-        event.preventDefault();
-        let data = Form2Object(form);
-        Modal.destroy();
-        $.ajax({
-            url:'/api/education/',
-            method:'POST',
-            data:data,
-            success:function (res) {
-                console.log(res);
-                LoadSidePanel();
-            }
-        })
-    }
-
     function SaveResume() {
+        let name = $('#resume-name').val();
+
         let markup = $('#resume').html();
-        Resume.saveResume('{{ resume.id }}', markup, console.log);
+        console.log(CurrentResume.layout);
+        Resume.saveResume(
+            '{{ resume.id }}',
+            {
+                layout_id:CurrentResume.layout,
+                theme_id:CurrentResume.theme,
+                script_id:CurrentResume.script,
+                layout:{text:markup},
+                name:name
+            },
+            console.log
+        );
     }
 
     var Modal = {

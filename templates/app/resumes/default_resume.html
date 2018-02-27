@@ -23,14 +23,15 @@
 </div>
 
 <script>
-    let Template = {
+    var Template = {
         education:function(obj){
+            console.log(obj);
             return `
-                <span class='school'>${obj.school}</span>
+                <span class='school'>${obj.data.school}</span>
                 <br>
-                <span class='degree'>${obj.degree}</span>
+                <span class='degree'>${obj.data.degree}</span>
                 <br>
-                <span class='date'>${obj.date}</span>
+                <span class='date'>${obj.data.date}</span>
             `;
         }
     }

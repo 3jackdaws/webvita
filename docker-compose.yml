@@ -6,7 +6,6 @@ services:
     volumes:
       - .:/app
     depends_on:
-      - broker
       - database
 
 

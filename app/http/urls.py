@@ -24,7 +24,7 @@ from rest_framework.authtoken.views import obtain_auth_token
 from app.http.views import common
 from app.http.views.rest.authentication import SessionView
 from app.http.views.rest.accounts import AccountView
-from app.http.views.rest.resumes import ResumeView, SkillView, EducationView, AttributesView
+from app.http.views.rest.resumes import ResumeView, ObjectsView
 
 
 
@@ -49,9 +49,7 @@ urlpatterns = [
 
 
     url(r'^api/resumes/([0-9]+)?', ResumeView.as_view()),
-    url(r'^api/skills/([0-9]+)?', SkillView.as_view()),
-    url(r'^api/education/([0-9]+)?', EducationView.as_view()),
-    url(r'^api/attributes/?', AttributesView.as_view()),
+    url(r'^api/objects/([0-9]+)?', ObjectsView.as_view()),
 
 
 
