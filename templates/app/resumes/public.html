@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+    <div class="ui container" style="max-width: 1000px">
+
+        <div id="resume"></div>
+    </div>
+{% endblock %}
+
+
+
+{% block scripts %}
+    <script src="/static/js/resume.js"></script>
+    <script>
+        window.addEventListener('load', function () {
+            LoadResume();
+        });
+
+        function LoadResume(){
+            Resume.fetchResume('{{ resume.id }}', function (resume) {
+                Resume.getObject(resume.layout, function (layout) {
+                    console.log(layout);
+                    $('#resume').html(layout.data.text);
+
+                });
+            });
+        }
+
+    </script>
+
+{% endblock %}

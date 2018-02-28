@@ -58,3 +58,12 @@ def static(request, path):
     with open(filepath, 'rb') as fp:
         sometext = fp.read()
     return FileResponse(sometext, content_type=mimetypes.guess_type(filepath)[0])
+
+def public_link_resume(request, token):
+    print(token)
+    try:
+        resume = Resume.objects.get(sharelink=token)
+    except Exception as e:
+        print(e)
+        return redirect('/')
+    return render(request, 'app/resumes/public.html', {'resume':resume})

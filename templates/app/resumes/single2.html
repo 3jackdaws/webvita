@@ -9,14 +9,26 @@
 {% block content %}
 
     <div class="ui padded grid">
-        <div class='four wide column'>
-            <div class="ui input fluid">
-                <input class="" id="resume-name" value="" style="; font-size: 2em !important; padding: 2px;">
+        <div id="sidepanel" class='four wide column'>
+            <div class="ui segment">
+                <form class="ui form">
+                    <div class="field">
+                        <label>RESUME NAME</label>
+                        <input class="" id="resume-name" value="" >
+                    </div>
+                    <div class="field">
+                        <label>SHARE LINK</label>
+                        <input readonly id="resume-share-link">
+                    </div>
+
+                </form>
+                <br>
+                <div class="ui buttons fluid" style="">
+                    <button class="ui button green" onclick="SaveResume()">SAVE</button>
+                    <button class="ui button red" onclick="ArchiveResume()">ARCHIVE</button>
+                </div>
             </div>
-            <div class="ui buttons fluid" style="margin-bottom: 10px;">
-                <button class="ui button green" onclick="SaveResume()">SAVE</button>
-                <button class="ui button red" onclick="ArchiveResume()">ARCHIVE</button>
-            </div>
+
             <div class="ui styled accordion" style="width: 100%">
                 <div class="title">
                     <i class="icon dropdown" ></i>
@@ -67,6 +79,7 @@
                     </div>
 
                 </div>
+ {# THEMES #}
                 <div class="title">
                     <i class="icon dropdown" ></i>
                     Theme
@@ -77,14 +90,6 @@
 
                     </div>
                 </div>
-                <div class="title">
-                    <i class="icon dropdown" ></i>
-                    Scripts
-                    <i class="icon add" style="float: right;"></i>
-                </div>
-                <div id="sidepanel-scripts" class="content">
-
-                </div>
 
             </div>
             <div class="draggable-trash" style="min-height: 60px; text-align: center; display: flex; justify-content: center; align-items: center">
@@ -94,12 +99,7 @@
             </div>
         </div>
         <div class='twelve wide column'>
-
-
             <div id="resume">
-
-
-
             </div>
         </div>
 
@@ -196,6 +196,7 @@
             Resume.fetchResume('{{ resume.id }}', function (resume) {
                 CurrentResume = resume;
                 $('#resume-name').val(resume.name);
+                $('#resume-share-link').val(window.location.host + '/r/' + resume.sharelink);
                 console.log(resume.layout);
                 Resume.getObject(resume.layout, function (layout) {
                     $('#resume').html(layout.data.text);
@@ -204,9 +205,6 @@
                 Resume.getObject(resume.theme, function (theme) {
                     $('#styles').html(theme.data.text);
                 });
-
-
-
 
             });
         }

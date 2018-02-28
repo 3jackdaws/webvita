@@ -1,3 +1,18 @@
+@media print{
+    #resume{
+        position: fixed;
+        width: 100vw;
+        left: 0;
+        top: 0;
+        background-color: white;
+        box-shadow: none;
+    }
+
+    #sidepanel, #navbar{
+        display: none;
+    }
+}
+
 .rs-top{
     min-height: 200px;
     text-align: center;
@@ -13,10 +28,6 @@
 
 .rs-field{
     min-height: 100px;
-}
-
-.rs-field::drop{
-    background-color: red;
 }
 
 .rs-item{

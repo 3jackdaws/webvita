@@ -24,6 +24,8 @@ class ResumeSerializer(ModelSerializer):
         model = Resume
         fields = (
             'id',
+            'sharelink',
+            'vanity',
             'name',
             'owner',
             'archived',

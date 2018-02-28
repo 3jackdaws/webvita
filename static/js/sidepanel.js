@@ -247,7 +247,6 @@ let Sidepanel = {
             Modal.display('Add Theme', content, buttons);
         }
     },
-    Scripts:{},
     makeDraggable:function () {
         $.each($('.rs-sidepanel'), function (i, e) {
             Sortable.create(e, {

@@ -37,7 +37,7 @@ urlpatterns = [
     url(r'^register/$', common.render_user_register),
     url(r'^resumes/$', common.render_resumes),
     url(r'^resumes/([0-9]+)/$', common.render_single_resume),
-    url(r'^render-resume/([0-9]+)/$', common.super_safe_resume_renderer),
+    url(r'^r/(.+)', common.public_link_resume),
 
 
 
