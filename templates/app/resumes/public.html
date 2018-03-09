@@ -1,17 +1,20 @@
-{% extends 'base.html' %}
+<head>
+    <link rel="stylesheet" href="/static/css/semantic.min.css">
+    <link rel="stylesheet" href="/static/css/custom.css">
+    <link rel="stylesheet" href="/static/css/resume.css">
+</head>
+<body style="background-color: white !important;">
 
 
-{% block content %}
+    <div id="resume" style="box-shadow: none; max-width: 1200px; margin: 0 auto"></div>
 
-    <div class="ui container" style="max-width: 1000px">
-
-        <div id="resume"></div>
-    </div>
-{% endblock %}
+</body>
 
 
 
-{% block scripts %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="/static/js/semantic.min.js"></script>
+    <script src="/static/js/common.js"></script>
     <script src="/static/js/resume.js"></script>
     <script>
         window.addEventListener('load', function () {
@@ -30,4 +33,3 @@
 
     </script>
 
-{% endblock %}
