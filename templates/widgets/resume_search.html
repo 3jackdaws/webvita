@@ -1,0 +1,30 @@
+<script>
+    function TextInTextNode(elem, text){
+        if(!text) return false;
+        let tNodes = $(elem).contents().filter(function() {
+            return this.nodeType === 3; //Node.TEXT_NODE
+        });
+
+        for(let i = 0;i<tNodes.length;i++){
+            if(tNodes[i].data.toLowerCase().search(text) !== -1){
+                return true;
+            }
+        }
+        return false;
+    }
+    function ResumeSearch (event) {
+        let text = event.target.value.toLowerCase();
+        $.each($('#resume .rs-item, #resume .rs-item span'), function (i,e) {
+
+            if(TextInTextNode(e, text)){
+                e.classList.add('highlight');
+            }else{
+                e.classList.remove('highlight');
+            }
+        });
+    }
+</script>
+<div class="ui input">
+    <input placeholder="Search" oninput="ResumeSearch(event)">
+</div>
+

@@ -153,6 +153,44 @@ let Sidepanel = {
             Modal.display('Add Skill', content, buttons);
         }
     },
+    Widgets:{
+        load:function () {
+            let objectType = 'widgets';
+            Resume.getObjectsOfType(objectType, function(objects){
+                let $panel = $('#sidepanel-' + objectType);
+                $panel.html('');
+                $.each(objects, function (i, e) {
+                    let div = $(`<div class="rs-item rs-sidepanel-item widget">${ e.data.name }</div>`);
+                    div[0].meta = e;
+                    $panel.append(div);
+                });
+                Sidepanel.makeDraggable();
+            });
+        },
+        showModal:function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            var content = `
+            <form class='ui form' id="modal-form">
+                <div class="field">
+                    <label>Name</label>
+                    <input name="name" placeholder="Widget Name">
+                </div>
+                <div class="field">
+                    <label>Widget Markup</label>
+                    <textarea name="text"></textarea>
+                </div>
+            </form>
+    
+            `;
+
+            var buttons = `
+                <button class='ui negative button'>CANCEL</button>
+                <button class='ui positive button' onclick='Resume.createObject("widgets", Form2Object($("#modal-form")), Sidepanel.Widgets.load)'>ADD</button>
+            `;
+            Modal.display('Add Widget', content, buttons);
+        }
+    },
     Layouts:{
         load:function () {
             let objectType = 'layout';
@@ -266,5 +304,6 @@ let Sidepanel = {
         Sidepanel.Skills.load();
         Sidepanel.Layouts.load();
         Sidepanel.Themes.load();
+        Sidepanel.Widgets.load();
     }
 };

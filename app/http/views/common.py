@@ -4,6 +4,8 @@ from django.http import HttpResponse, FileResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from app.models import Resume, ResumeObject
+from rest_framework.views import APIView
+from rest_framework.response import Response
 
 
 from app.settings import STATIC_BASE, BASE_DIR
@@ -46,12 +48,6 @@ def render_single_resume(request, resume_id):
     }
     return render(request, 'app/resumes/single2.html', context)
 
-def super_safe_resume_renderer(request, id):
-    resume = Resume.objects.filter(owner=request.user).get(id=id)
-    context = {
-        'resume':resume
-    }
-    return render(request, 'app/resumes/ultra_mega_safe_resume_template.html', context)
 
 def static(request, path):
     filepath = STATIC_BASE + path
@@ -67,3 +63,37 @@ def public_link_resume(request, token):
         print(e)
         return redirect('/')
     return render(request, 'app/resumes/public.html', {'resume':resume})
+
+
+def search_user_attributes(request):
+    import json
+    results = set()
+    query = request.GET.get('skill').lower()
+    if query:
+        prefilter = ResumeObject.objects.filter(type='skills')
+        for obj in prefilter:
+            data = json.loads(obj.data)
+            if query in data['skill'].lower():
+                results.add(obj.owner)
+        return Response([
+            f'/r/{x.first_name}-{x.last_name}' for x in results
+        ])
+    else:
+        return Response({})
+
+class PublicSearchView(APIView):
+
+    def get(self, request):
+        import json
+        type = request.GET.get('type').lower()
+        query = request.GET.get('q').lower()
+        result_set = set()
+        if query:
+            prefilter = ResumeObject.objects.filter(type=type)
+            for obj in prefilter:
+                if query in obj.data:
+                    result_set.add(obj.owner)
+
+        return Response([
+            f'/r/{x.first_name}-{x.last_name}'.lower() for x in result_set
+        ])

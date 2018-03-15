@@ -24,7 +24,7 @@ from rest_framework.authtoken.views import obtain_auth_token
 from app.http.views import common
 from app.http.views.rest.authentication import SessionView
 from app.http.views.rest.accounts import AccountView
-from app.http.views.rest.resumes import ResumeView, ObjectsView
+from app.http.views.rest.resumes import ResumeView, ObjectsView, ShareLinkView
 
 
 
@@ -50,6 +50,8 @@ urlpatterns = [
 
     url(r'^api/resumes/([0-9]+)?', ResumeView.as_view()),
     url(r'^api/objects/([0-9]+)?', ObjectsView.as_view()),
+    url(r'^api/share-links/([0-9]+)?', ShareLinkView.as_view()),
+    url(r'^api/search', common.PublicSearchView.as_view()),
 
 
 

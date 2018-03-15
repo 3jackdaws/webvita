@@ -33,6 +33,7 @@
 .rs-item{
     padding: 2px;
     cursor: pointer;
+    position: relative;
 }
 
 .rs-sidepanel .rs-item{
@@ -76,4 +77,19 @@
 #resume{
     position: relative;
     padding: 30px;
+    max-width: 1200px;
+}
+
+.highlight{
+    background-color: #fffc89 !important;
+}
+
+.iframe-widget{
+    border: 2px dotted #ddd;
+    width: 100%;
+    display: block;
+    resize: both;
+    overflow: auto;
+    max-width: 100%;
+    position: relative;
 }

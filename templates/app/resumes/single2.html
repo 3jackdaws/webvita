@@ -17,7 +17,7 @@
                         <input class="" id="resume-name" value="" >
                     </div>
                     <div class="field">
-                        <label>SHARE LINK</label>
+                        <label>SHARE LINK <a class="clickable" onclick="Resume.makeVanity(CurrentResume.id, function(_){window.location.reload()})" style="float:right">MAKE VANITY LINK</a></label>
                         <input readonly id="resume-share-link">
                     </div>
 
@@ -25,7 +25,7 @@
                 <br>
                 <div class="ui buttons fluid" style="">
                     <button class="ui button green" onclick="SaveResume()">SAVE</button>
-                    <button class="ui button red" onclick="ArchiveResume()">ARCHIVE</button>
+                    <button class="ui button red" onclick="Resume.archive(CurrentResume.id, function(_){window.location = '/'})">ARCHIVE</button>
                 </div>
             </div>
 
@@ -66,6 +66,15 @@
                 </div>
                 <div id="sidepanel-skills" class="content rs-sidepanel">
                     <div class="rs-item">No Skills</div>
+                </div>
+ {# WIDGETS #}
+                <div class="title">
+                    <i class="icon dropdown" ></i>
+                    Widgets
+                    <i class="icon add" style="float: right;" onclick="Sidepanel.Widgets.showModal(event)"></i>
+                </div>
+                <div id="sidepanel-widgets" class="content rs-sidepanel">
+
                 </div>
  {# LAYOUTS #}
                 <div class="title">
@@ -183,6 +192,9 @@
                                 console.error(e);
                             }
 
+                        }
+                        if('meta' in object && object.meta.type === 'widgets'){
+                            object.innerHTML = object.meta.data.text;
                         }
                     },
                     onRemove:function(event){

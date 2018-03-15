@@ -171,3 +171,26 @@ class ObjectsView(APIView):
         except:
             return Response(status=404)
 
+
+class ShareLinkView(APIView):
+    http_user = True
+    def put(self, request, _):
+        from app.models import gensharelink
+        if "vanity_link" in request.data:
+            user = request.user
+            resume_id = request.data.get('vanity_link')
+            group = Resume.objects.filter(owner=request.user)
+            resume = group.get(id=resume_id)
+            vanity_link = f'{user.first_name}-{user.last_name}'.lower()
+            try:
+                old_resume = group.get(sharelink=vanity_link)
+                old_resume.sharelink = gensharelink()
+                old_resume.save()
+            except:
+                pass
+
+            resume.sharelink = vanity_link
+            resume.save()
+            return Response(ResumeSerializer(resume).data)
+
+        return Response({})

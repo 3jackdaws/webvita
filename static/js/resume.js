@@ -110,16 +110,27 @@ var Resume = {
                 callback(decodedResults);
             }
         })
-    }
-
-};
-
-let User = {
-    fetchAttributes:function(callback){
+    },
+    makeVanity:function (id, callback) {
         $.ajax({
-            url:'/api/attributes',
-            method:'GET',
+            url:'/api/share-links/',
+            method:'PUT',
+            data:{
+                'vanity_link':id
+            },
             success:callback
         })
+    },
+    archive:function(id, callback){
+        $.ajax({
+            url:'/api/resumes/' + id,
+            method:'PUT',
+            data:{
+                payload:JSON.stringify({archived:true})
+            },
+            success:callback
+        });
     }
+
 };
+

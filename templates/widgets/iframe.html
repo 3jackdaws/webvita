@@ -1,0 +1,10 @@
+<div style="position: relative">
+    <div class="cover" onclick="{
+        let frame = $(this).find('iframe');
+        console.log(frame);
+        frame[0].src = prompt('Enter url:');
+        this.onclick = null;
+    }">
+        <iframe class="iframe-widget" ></iframe>
+    </div>
+</div>
